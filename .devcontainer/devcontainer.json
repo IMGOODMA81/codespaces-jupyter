@@ -1,3 +1,217 @@
+const sessionTokenOptions = {
+  method: "POST",
+  headers: {
+    accept: "application/json",
+    "dw-client-app-key": `${yourAppKey}`,
+  },
+  body: {
+    clientID: `${yourClientID}`,
+    clientSecret: `${yourclientSecret}`,
+  },
+};
+
+const session = (
+  await fetch(
+    "https://bo-api.drivewealth.io/back-office/auth/tokens",
+    sessionTokenOptions
+  )
+).json();
+
+
+const generalHeaders = {
+  accept: "application/json",
+  "dw-client-app-key": `${yourAppKey}`,
+  "content-type": "application/json",
+  authorization: `Bearer  ${session.access_token}`
+};
+
+const customerOptions = {
+  method: "POST",
+  headers: generalHeaders,
+  body: {
+    userType: "INDIVIDUAL_TRADER",
+    documents: [
+      {
+        type: "BASIC_INFO",
+        data: {
+          firstName: "Matthew",
+          lastName: "Wright",
+          country: "USA",
+          phone: "8005882300",
+          emailAddress: "js@dw-test.com",
+          language: "en_US",
+        },
+      },
+      {
+        type: "IDENTIFICATION_INFO",
+        data: {
+          value: "111223333",
+          type: "SSN",
+          citizenship: "USA",
+        },
+      },
+      {
+        type: "PERSONAL_INFO",
+        data: {
+          birthDay: 3,
+          birthMonth: 12,
+          birthYear: 2000,
+          marital: "Single",
+          politicallyExposedNames: null,
+        },
+      },
+      {
+        type: "ADDRESS_INFO",
+        data: {
+          street1: "15 Exchange Place",
+          city: "Jersey City",
+          province: "NJ",
+          postalCode: "07302",
+        },
+      },
+      {
+        type: "EMPLOYMENT_INFO",
+        data: {
+          status: "Employed",
+          broker: false,
+          company: "DriveWealth",
+          type: "PROFESSIONAL",
+          city: "Jersey City",
+          country: "USA",
+          position: "CPO",
+        },
+      },
+      {
+        type: "INVESTOR_PROFILE_INFO",
+        data: {
+          investmentObjectives: "Active_DAIly",
+          investmentExperience: "None",
+          annualIncome: 100000,
+          networthLiquid: 58932,
+          networthTotal: 485003,
+          riskTolerance: "Low",
+          fundingSources: ["EMP", "Gambling"],
+          transferFrequencyPerMonth: 7,
+          transferTotalExpected: 45350,
+          investmentHistory12M: 12,
+        },
+      },
+      {
+        type: "DISCLOSURES",
+        data: {
+          termsOfUse: true,
+          customerAgreement: true,
+          marketDataAgreement: true,
+          rule14b: true,
+          findersFee: true,
+          privacyPolicy: true,
+          dataSharing: true,
+          signedBy: "Matthew Wright",
+        },
+      },
+    ],
+  },
+};
+
+const customer = (
+  await fetch(
+    "https://bo-api.drivewealth.io/back-office/users",
+    customerOptions
+  )
+).json();
+
+const accountOptions = {
+  method: "POST",
+  headers: generalHeaders,
+  body: {
+    userID: customer.id,
+    accountType: "LIVE",
+    accountManagementType: "SELF",
+    tradingType: "CASH",
+    ignoreMarketHoursForTest: true,
+    ignoreBuyingPower: true,
+  },
+};
+
+const account = (
+  await fetch(
+    "https://bo-api.drivewealth.io/back-office/accounts",
+    accountOptions
+  )
+).json();
+
+const orderOptions = {
+  method: "POST",
+  headers: generalHeaders,
+  body: {
+    accountNo: account.accountNo,
+    orderType: "MARKET",
+    symbol: "SBUX",
+    side: "BUY",
+    amountCash: 125.5,
+  },
+};
+
+const order = (
+  await fetch("https://bo-api.drivewealth.io/back-office/orders", orderOptions)
+).json();
+
+const getOrderOptions = {
+  method: "GET",
+  headers: generalHeaders,
+};
+
+const orderDetails = (
+  await fetch(
+    `https://bo-api.drivewealth.io/back-office/orders/${getOrderOptions.orderID}`,
+    getOrderOptions
+  )
+).json();{
+  "id": "event_a5859ce6-7c4d...",
+  "type": "orders.completed",
+  "timestamp": "2019-03-29T22:11:37.841989687Z",
+  "payload": {
+    "id": "GC.82079a33-ae23...",
+    "orderNo": "GCZZ000027",
+    "type": "STOP",
+    "side": "SELL",
+    "status": "CANCELED",
+    "symbol": "AMZN",
+    "triggerPrice": 100,
+    "averagePrice": 0,
+    "cumulativeQuantity": 0,
+    "quantity": 5,
+    "fees": 0,
+    "createdBy": "b25f0d36-b4e4...",
+    "userID": "b25f0d36-b4e4...",
+    "accountID": "b25f0d36-b4e4...",
+    "accountNo": "DWZR000001",
+    "created": "2019-03-29T22:11:24.013Z"
+  }
+}
+{
+  "id": "event_a5859ce6-7c4d...",
+  "type": "orders.completed",
+  "timestamp": "2019-03-29T22:11:37.841989687Z",
+  "payload": {
+    "id": "GC.82079a33-ae23...",
+    "orderNo": "GCZZ000027",
+    "type": "STOP",
+    "side": "SELL",
+    "status": "CANCELED",
+    "symbol": "AMZN",
+    "triggerPrice": 100,
+    "averagePrice": 0,
+    "cumulativeQuantity": 0,
+    "quantity": 5,
+    "fees": 0,
+    "createdBy": "b25f0d36-b4e4...",
+    "userID": "b25f0d36-b4e4...",
+    "accountID": "b25f0d36-b4e4...",
+    "accountNo": "DWZR000001",
+    "created": "2019-03-29T22:11:24.013Z"
+  }
+}
 {
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "hostRequirements": {
